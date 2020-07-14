@@ -1,0 +1,63 @@
+doctype html
+html(lang="en")
+    head
+        block head
+            meta(charset="UTF-8")
+            meta(http-equiv="X-UA-Compatible", content="IE-edge")
+            meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+            meta(name="google-signin-client_id" content="879508620239-iq626pk2vdu2jsgv70ri6vj8nbc9jufu.apps.googleusercontent.com")
+            
+            link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
+            link(rel="shortcut icon", href="favicon.png" type="image/png")
+            
+            //- script(src="https://apis.google.com/js/platform.js?onload=init" async defer)
+
+            block scripts
+
+            title Marto's Car Wash
+    body
+        header
+            div.page-header
+                nav(class="navbar navbar-expand-md navbar-light bg-light")
+                    a(class="navbar-brand", href="/")
+                        h1 Marto's Car Wash
+                    //- button(class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation")
+                    //-     span(class="navbar-toggler-icon")
+                    //- div(class="collapse navbar-collapse" id="navbarSupportedContent") 
+                        //- ul(class="navbar-nav float-right ml-auto")
+                        //-     if (!isAuth)
+                        //-         li(class="nav-link navbar-right" href="/login")
+                        //-             a(class="btn btn-link navbar-right", href="/login") Login
+                        //-     else
+                        //-         //- li(class="nav-link" href="/dashboard")
+                        //-         //-     a(class="nav-link", href="/dashboard") Dashboard
+                        //-         li(class="nav-link navbar-right")
+                        //-             a(href="/logout" class="btn btn-link" role="button") Sign out
+        main(role="main")
+            //- if (messages.error) 
+            //-     div.container
+            //-         div(class="row")
+            //-             div(class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
+            //-                 div(class="alert alert-danger alert-dismissible fade show m-3" role="alert") #{messages.error[0]}
+            //-                     button(type="button" class="close" data-dismiss="alert" aria-label="Close")
+            //-                         span(aria-hidden="true") &times;           
+            block content
+
+        footer.footer
+            div.container
+                hr
+                //- a(class="btn btn-link", href="/about") About   
+                p 
+                | Zach Marto  ·  (508) 314-1188  ·  
+                a(class="btn btn-link", href="https://github.com/Dcai169") martocarwashing@gmail.com
+                
+                p 
+                | Made by 
+                a(class="btn btn-link", href="https://github.com/Dcai169") Daniel Cai 
+                | with <3
+                
+
+
+        script(src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous")
+        script(src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous")
+        script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous")
