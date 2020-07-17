@@ -6,39 +6,77 @@ let exteriorService = document.getElementById('exterior-service');
 let interiorService = document.getElementById('interior-service');
 
 let dateInput = document.getElementById('app-date');
-let hourInput = document.getElementById('app-hour');
-let minuteInput = document.getElementById('app-min');
+let timeInput = document.getElementById('app-time');
 let display = document.getElementById('datetime-display');
 
-$('#app-date').prop('min', new Date().toISOString().substring(0, 10));
-$('#main-form-submit').attr("disabled", true);
+let bookedDateTimes = undefined;
 
-function appDateTimeIsValid(date) {
-    return date.toString() !== 'Invalid Date' || hourInput.value !== 'none' || minuteInput.value !== 'none';
+function httpGetAsync(theUrl, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null);
+}
+
+function setTimeInputState(disabledState, hiddenState) {
+    for (var i = 1; i < timeInput.options.length; i++) {
+        timeInput.options[i].disabled = disabledState;
+        timeInput.options[i].hidden = hiddenState;
+    }
+}
+
+function getSelectedTimeObj() {
+    let timeArray = timeInput.value.split(':').map((obj) => { return Number(obj) });
+    // console.log(new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4));
+    return new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4); // Plus 4 hrs to UTC
+}
+
+function setDisabledBasedOnCurrentTime(minTime) {
+    for (var i = 1; i < timeInput.options.length; i++) {
+        let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
+        if (minTime > new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4)) {
+            timeInput.options[i].disabled = true;
+            timeInput.options[i].hidden = true;
+        }
+    }
+}
+
+function setDisabledBasedOnOtherBookings(){
+    bookedDateTimes.forEach(app => {
+        for (var i = 1; i < timeInput.options.length; i++) {
+            let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
+            let itemDate = new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4);
+            if (app.appStart <= itemDate && itemDate < app.appEnd) {
+                timeInput.options[i].disabled = true;
+            }
+        }
+    });
 }
 
 calculateButton.addEventListener('click', (e) => {
     e.preventDefault();
     let serviceCost = { hours: 0, price: 0 };
-    let appDate = new Date(dateInput.valueAsNumber + 1.44e+7);
-    appDate.setHours((hourInput.value.includes("a") ? hourInput.value.substring(0, 2) : Number(hourInput.value.substring(0, 2)) + 12), (minuteInput.value.includes("3") ? 30 : 00))
+    let appDate = getSelectedTimeObj();
     switch (vehicleType.value) {
         case 'Sedan':
         case 'Convertable':
             if (exteriorService.value.includes("wash")) {
                 serviceCost.hours += 1;
-                serviceCost.price += 15;
+                serviceCost.price += 20;
             } else if (exteriorService.value.includes("detail")) {
                 serviceCost.hours += 2;
-                serviceCost.price += 30;
+                serviceCost.price += 40;
             }
 
             if (interiorService.value.includes("clean")) {
                 serviceCost.hours += 1;
-                serviceCost.price += 25;
+                serviceCost.price += 75;
             } else if (interiorService.value.includes("detail")) {
                 serviceCost.hours += 2.5;
-                serviceCost.price += 75;
+                serviceCost.price += 150;
             }
             break;
 
@@ -46,18 +84,18 @@ calculateButton.addEventListener('click', (e) => {
         case 'SUV':
             if (exteriorService.value.includes("wash")) {
                 serviceCost.hours += 1.5;
-                serviceCost.price += 20;
+                serviceCost.price += 30;
             } else if (exteriorService.value.includes("detail")) {
                 serviceCost.hours += 2.5;
-                serviceCost.price += 40;
+                serviceCost.price += 50;
             }
 
             if (interiorService.value.includes("clean")) {
                 serviceCost.hours += 1.5;
-                serviceCost.price += 30;
+                serviceCost.price += 100;
             } else if (interiorService.value.includes("detail")) {
                 serviceCost.hours += 3;
-                serviceCost.price += 85;
+                serviceCost.price += 150;
             }
             break;
 
@@ -65,18 +103,18 @@ calculateButton.addEventListener('click', (e) => {
         case 'Van':
             if (exteriorService.value.includes("wash")) {
                 serviceCost.hours += 1.5;
-                serviceCost.price += 25;
+                serviceCost.price += 35;
             } else if (exteriorService.value.includes("detail")) {
                 serviceCost.hours += 3;
-                serviceCost.price += 50;
+                serviceCost.price += 55;
             }
 
             if (interiorService.value.includes("clean")) {
                 serviceCost.hours += 1;
-                serviceCost.price += 25;
+                serviceCost.price += 100;
             } else if (interiorService.value.includes("detail")) {
                 serviceCost.hours += 2.5;
-                serviceCost.price += 75;
+                serviceCost.price += 100;
             }
             break;
 
@@ -87,4 +125,24 @@ calculateButton.addEventListener('click', (e) => {
         display.innerHTML = `Your appointment is at ${appDate.toLocaleString()}, will take ${serviceCost.hours} ${(serviceCost.hours > 1 ? "hours" : "hour")}, and will cost $${serviceCost.price}.`
         $('#main-form-submit').removeAttr('disabled');
     }
+});
+
+window.onload = function () {
+    let loadTime = new Date();
+    dateInput.defaultValue = loadTime.toISOString().substring(0, 10);
+    $('#app-date').prop('min', loadTime.toISOString().substring(0, 10));
+    $('#main-form-submit').attr("disabled", true);
+    setTimeInputState(false, false);
+    httpGetAsync('http://martocarwash.ddns.net/booked', (resText) => {
+        bookedDateTimes = JSON.parse(resText).map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });;
+        setDisabledBasedOnCurrentTime(loadTime);
+        setDisabledBasedOnOtherBookings();
+    });
+    // console.log(loadTime);
+};
+
+dateInput.addEventListener('change', (e) => {
+    setTimeInputState(false, false);
+    setDisabledBasedOnCurrentTime(new Date());
+    setDisabledBasedOnOtherBookings();
 });

@@ -2,7 +2,6 @@ extends default
 
 block scripts
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
-    
 
 block content
     div.m-3
@@ -37,16 +36,16 @@ block content
                             div.col-md-6
                                 label(for="exterior-service") Exterior Service
                                 select(required id="exterior-service" name="exterior-service" class="form-control") 
-                                    option(value="undef" selected disabled hidden) Select one
-                                    option(value="none") None
+                                    option(value="none" selected disabled hidden) Select one
+                                    option(value="exterior-none") None
                                     option(value="exterior-wash") Exterior Wash
                                     option(value="exterior-detail") Exterior Detailing
                                 div.m-2
                             div.col-md-6
                                 label(for="interior-service") Interior Service
                                 select(required id="interior-service" name="interior-service" class="form-control") 
-                                    option(value="undef" selected disabled hidden) Select one
-                                    option(value="none") None
+                                    option(value="none" selected disabled hidden) Select one
+                                    option(value="interior-none") None
                                     option(value="interior-clean") Interior Cleaning
                                     option(value="interior-detail") Interior Detailing
                         hr
@@ -61,34 +60,54 @@ block content
                         //-     div.col-md-3
                         //-         h5 &#8203;
                         div.row
-                            div.col-md-3
+                            div.col-md-6
                                 //- h5 Appointment Date
                                 //- div.m-2
                                 label(for="app-date") Appointment Date
                                 input(required type="date" id="app-date" name="app-date" min="2020-07-07" class="form-control")
-                                //- script(src="date-picker.js")
-                                div.m-2
-                            div.col-md-3
-                                //- h5 Appointment Time 
-                                label(for="app-hour") Appointment Hour
-                                select(required id="app-hour" name="app-hour" class="form-control")
+                            //-     //- script(src="date-picker.js")
+                            //-     div.m-2
+                            //- div.col-md-3
+                            //-     //- h5 Appointment Time 
+                            //-     label(for="app-hour") Appointment Hour
+                            //-     select(required id="app-hour" name="app-hour" class="form-control")
+                            //-         option(value="none" selected disabled hidden) Select an option
+                            //-         option(id="10") 10am
+                            //-         option(id="11") 11am
+                            //-         option(id="12") 12am
+                            //-         option(id="13") 01pm
+                            //-         option(id="14") 02pm
+                            //-         option(id="15") 03pm
+                            //-         option(id="16") 04pm
+                            //-         option(id="17") 05pm
+                            //-     div.m-2
+                            //- div.col-md-3
+                            //-     //- h5 &#8203;
+                            //-     label(for="app-min") Appointment Minute
+                            //-     select(required id="app-min" name="app-min" class="form-control")
+                            //-         option(value="none" selected disabled hidden) Select an option
+                            //-         option :00
+                            //-         option :30
+                            div.col-md-6
+                                label(for='app-time') Appointment Time
+                                select(required name="app-time" id='app-time' class="form-control")
                                     option(value="none" selected disabled hidden) Select an option
-                                    option 10am
-                                    option 11am
-                                    option 12am
-                                    option 01pm
-                                    option 02pm
-                                    option 03pm
-                                    option 04pm
-                                    option 05pm
-                                div.m-2
-                            div.col-md-3
-                                //- h5 &#8203;
-                                label(for="app-min") Appointment Minute
-                                select(required id="app-min" name="app-min" class="form-control")
-                                    option(value="none" selected disabled hidden) Select an option
-                                    option :00
-                                    option :30
+                                    option(value="10:00") 10:00am
+                                    option(value="10:30") 10:30am
+                                    option(value="11:00") 11:00am
+                                    option(value="11:30") 11:30am
+                                    option(value="12:00") 12:00am
+                                    option(value="12:30") 12:30am
+                                    option(value="13:00") 01:00pm
+                                    option(value="13:30") 01:30pm
+                                    option(value="14:00") 02:00pm
+                                    option(value="14:30") 02:30pm
+                                    option(value="15:00") 03:00pm
+                                    option(value="15:30") 03:30pm
+                                    option(value="16:00") 04:00pm
+                                    option(value="16:30") 04:30pm
+                                    option(value="17:00") 05:00pm
+                                    option(value="17:30") 05:30pm
                         div.m-2
                         hr
                     //- div.form-group
@@ -128,7 +147,7 @@ block content
                     section
                         div.row
                             div.col-md-2
-                                button(id="calculate-button" class="btn btn-primary") Calculate
+                                button(id="calculate-button" class="btn btn-primary" type="none") Calculate
                                 //- onclick="calculateButtonPressed()"
                                 //- Calculate button because no variable on change event
                             

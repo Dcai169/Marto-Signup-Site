@@ -2,10 +2,11 @@ extends default
 
 block scripts
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/timepicker@1.13.11/jquery.timepicker.min.js")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/timepicker@1.13.11/jquery.timepicker.css")
     scripts(src="tester.js")
 
 block content
     div.container
-        form
-            input(class="target" type="test" value="Box 1")
-        div(id="other") Trigger handler
+        div.jumbotron
+            input(class="ui-timepicker-input" type="text" id="time-input")
