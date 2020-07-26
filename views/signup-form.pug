@@ -21,7 +21,9 @@ block content
                         select(required id="vehicle-type" name="vehicle-type" class="form-control") 
                             option(value="none" selected disabled hidden) Select one
                             option Sedan
-                            option Convertable
+                            option Convertible
+                            option Hatchback
+                            option Station Wagon
                             option Minivan
                             option SUV
                             option Truck
@@ -64,33 +66,10 @@ block content
                                 //- h5 Appointment Date
                                 //- div.m-2
                                 label(for="app-date") Appointment Date
-                                input(required type="date" id="app-date" name="app-date" min="2020-07-07" class="form-control")
-                            //-     //- script(src="date-picker.js")
-                            //-     div.m-2
-                            //- div.col-md-3
-                            //-     //- h5 Appointment Time 
-                            //-     label(for="app-hour") Appointment Hour
-                            //-     select(required id="app-hour" name="app-hour" class="form-control")
-                            //-         option(value="none" selected disabled hidden) Select an option
-                            //-         option(id="10") 10am
-                            //-         option(id="11") 11am
-                            //-         option(id="12") 12am
-                            //-         option(id="13") 01pm
-                            //-         option(id="14") 02pm
-                            //-         option(id="15") 03pm
-                            //-         option(id="16") 04pm
-                            //-         option(id="17") 05pm
-                            //-     div.m-2
-                            //- div.col-md-3
-                            //-     //- h5 &#8203;
-                            //-     label(for="app-min") Appointment Minute
-                            //-     select(required id="app-min" name="app-min" class="form-control")
-                            //-         option(value="none" selected disabled hidden) Select an option
-                            //-         option :00
-                            //-         option :30
+                                input(required type="date" id="app-date" name="app-date" min="2020-07-07" class="form-control" disabled)
                             div.col-md-6
                                 label(for='app-time') Appointment Time
-                                select(required name="app-time" id='app-time' class="form-control")
+                                select(required name="app-time" id='app-time' class="form-control" disabled)
                                     option(value="none" selected disabled hidden) Select an option
                                     option(value="10:00") 10:00am
                                     option(value="10:30") 10:30am
@@ -126,18 +105,18 @@ block content
                                 label(for='client-address') Address
                                 input(required type="text" id="app-address" name="client-address" class="form-control")
                                 div.m-3
-                            div.col-md-3
+                            div.col-md-6
                                 label(for='client-city') City
                                 input(required type="text" id="app-city" name="client-city" class="form-control")
                                 div.m-3
-                            div.col-md-3
-                                label(for='client-state') State
-                                input(required type="text" id="app-state" name="app-state" class="form-control")
-                                div.m-3
+                            //- div.col-md-3
+                            //-     label(for='client-state') State
+                            //-     input(required type="text" id="app-state" name="app-state" class="form-control")
+                            //-     div.m-3
                         div.row
                             div.col-md-3
                                 label(for='client-contact') Phone Number
-                                input(required type="text" id="app-phone" name="app-phone" class="form-control")
+                                input(required type="tel" id="app-phone" name="app-phone" class="form-control")
                                 div.m-3
                             div.col-md-9
                                 label(for='special-instructions') Special Instructions

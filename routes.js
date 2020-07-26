@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { check, body, validationResult } = require('express-validator');
 const router = express.Router();
-let AppointmentModel = require('./models/appointment.js');
-let UserModel = require('./models/user.js');
+// let AppointmentModel = require('./models/appointment.js');
+// let UserModel = require('./models/user.js');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 
 let doc = null;
@@ -17,7 +17,7 @@ let doc = null;
 appointmentValidators = [
     check('client-email').isEmail().normalizeEmail(),
     check('app-phone').isMobilePhone().withMessage('Invalid phone number'),
-    check('vehicle-type').isIn(['Sedan', 'Convertable', 'Minivan', 'SUV', 'Truck', 'Van']),
+    check('vehicle-type').isIn(['Sedan', 'Convertible', 'Hatchback', 'Station Wagon', 'Minivan', 'SUV', 'Truck', 'Van']),
     check('exterior-service').isIn(['exterior-none', 'exterior-wash', 'exterior-detail']),
     check('interior-service').isIn(['interior-none', 'interior-clean', 'interior-detail']),
     // check('app-date').isBefore().withMessage('Date is in the past').isISO8601(),
@@ -30,11 +30,13 @@ appointmentSanitizers = [
     body('client-name').escape(),
     body('client-address').escape(),
     body('client-city').escape(),
-    body('app-state').escape(),
+    // body('app-state').escape(),
     body('special-instructions').escape()
 ];
 
 router.get('/', (req, res) => {
+    console.log(`GET ${req.ipInfo['ip'].substring(7)}${(req.ipInfo.error ? "" : `${(req.ipInfo.city ? ' '+req.ipInfo.city : '')}${(req.ipInfo.region ? ' '+req.ipInfo.region+',' : '')} ${req.ipInfo.country} ${req.ipInfo.ll}`)}`);
+    console.log('=================================');
     res.render("signup-form");
 });
 
@@ -50,6 +52,8 @@ router.get('/booked', (req, res) => {
 });
 
 router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidators, appointmentSanitizers, (req, res) => {
+    console.log(`POST ${JSON.stringify(req.body)}`);
+    console.log('=================================');
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(422);
@@ -62,7 +66,9 @@ router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidato
         let serviceCost = { hours: 0, price: 0 };
         switch (req.body['vehicle-type']) {
             case 'Sedan':
-            case 'Convertable':
+            case 'Convertible':
+            case 'Hatchback':
+            case 'Station Wagon':
                 if (req.body['exterior-service'].includes("wash")) {
                     serviceCost.hours += 1;
                     serviceCost.price += 20;

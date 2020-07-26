@@ -1,7 +1,6 @@
 let vehicleType = document.getElementById('vehicle-type')
 let calculateButton = document.getElementById('calculate-button');
 
-// let exteriorNone = document.getElementById('exterior-none');
 let exteriorService = document.getElementById('exterior-service');
 let interiorService = document.getElementById('interior-service');
 
@@ -10,6 +9,10 @@ let timeInput = document.getElementById('app-time');
 let display = document.getElementById('datetime-display');
 
 let bookedDateTimes = undefined;
+
+function servicesAreValid(appDate) {
+    return !(exteriorService.value === 'none' && interiorService.value === 'none');
+}
 
 function httpGetAsync(theUrl, callback) {
     var xmlHttp = new XMLHttpRequest();
@@ -30,8 +33,12 @@ function setTimeInputState(disabledState, hiddenState) {
 
 function getSelectedTimeObj() {
     let timeArray = timeInput.value.split(':').map((obj) => { return Number(obj) });
-    // console.log(new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4));
     return new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4); // Plus 4 hrs to UTC
+}
+
+function getTimeOfOption(option) {
+    let timeArray = option.value.split(':').map((obj) => { return Number(obj) });
+    new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4)
 }
 
 function setDisabledBasedOnCurrentTime(minTime) {
@@ -44,7 +51,7 @@ function setDisabledBasedOnCurrentTime(minTime) {
     }
 }
 
-function setDisabledBasedOnOtherBookings(){
+function setDisabledBasedOnOtherBookings() {
     bookedDateTimes.forEach(app => {
         for (var i = 1; i < timeInput.options.length; i++) {
             let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
@@ -56,13 +63,38 @@ function setDisabledBasedOnOtherBookings(){
     });
 }
 
-calculateButton.addEventListener('click', (e) => {
-    e.preventDefault();
+function setDisabledPreemptivelyPreventOverlaps() {
+    console.log(calcServiceCost().hours);
+    for (var i = 1; i < timeInput.options.length; i++) {
+        let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
+        let projectedEnd = new Date(dateInput.valueAsNumber + 1.44e+7 + (timeArray[0] + calcServiceCost().hours) * 3.6e+6 + timeArray[1] * 6.0e+4);
+        console.log(timeInput.options[i].value);
+        bookedDateTimes.forEach((app) => {
+            if (app.appStart.toDateString() === projectedEnd.toDateString() && app.appStart < projectedEnd) {
+                timeInput.options[i].disabled = true;
+            }
+        });
+    }
+}
+
+function getBookedTimeSlots() {
+    httpGetAsync('http://martocarwash.ddns.net/booked', (resText) => {
+        bookedDateTimes = JSON.parse(resText).map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });;
+        setDisabledBasedOnCurrentTime(new Date());
+        setDisabledBasedOnOtherBookings();
+        setDisabledPreemptivelyPreventOverlaps();
+    });
+    // console.log("Slots Updated");
+}
+
+function calcServiceCost() {
     let serviceCost = { hours: 0, price: 0 };
     let appDate = getSelectedTimeObj();
     switch (vehicleType.value) {
         case 'Sedan':
-        case 'Convertable':
+        case 'Convertible':
+        case 'Hatchback':
+        case 'Station Wagon':
             if (exteriorService.value.includes("wash")) {
                 serviceCost.hours += 1;
                 serviceCost.price += 20;
@@ -121,8 +153,31 @@ calculateButton.addEventListener('click', (e) => {
         default:
             break;
     }
-    if (appDateTimeIsValid(appDate)) {
-        display.innerHTML = `Your appointment is at ${appDate.toLocaleString()}, will take ${serviceCost.hours} ${(serviceCost.hours > 1 ? "hours" : "hour")}, and will cost $${serviceCost.price}.`
+    return serviceCost;
+}
+
+function serviceEventHandler(ev) {
+    if (exteriorService.value !== 'none' && interiorService.value !== 'none' && vehicleType.value !== 'none') {
+        $('#app-time').removeAttr('disabled');
+        $('#app-date').removeAttr('disabled');
+        setDisabledPreemptivelyPreventOverlaps();
+        // var latestStartTime = new Date(dateInput.valueAsDate.valueOf() - calcServiceCost().hours * 3.6e+6);
+        // console.log(latestStartTime.toLocaleString());
+
+    }
+}
+
+vehicleType.addEventListener('change', serviceEventHandler);
+dateInput.addEventListener('change', serviceEventHandler);
+exteriorService.addEventListener('change', serviceEventHandler);
+interiorService.addEventListener('change', serviceEventHandler);
+
+calculateButton.addEventListener('click', (ev) => {
+    e.preventDefault();
+    let serviceCost = calcServiceCost();
+
+    if (servicesAreValid(appDate)) {
+        display.innerHTML = `Your appointment will be on ${appDate.toLocaleDateString()} from ${appDate.toLocaleTimeString()} to ${new Date(appDate.valueOf() + serviceCost.hours * 3.6e+6).toLocaleTimeString()}, and will cost $${serviceCost.price}.`
         $('#main-form-submit').removeAttr('disabled');
     }
 });
@@ -133,16 +188,15 @@ window.onload = function () {
     $('#app-date').prop('min', loadTime.toISOString().substring(0, 10));
     $('#main-form-submit').attr("disabled", true);
     setTimeInputState(false, false);
-    httpGetAsync('http://martocarwash.ddns.net/booked', (resText) => {
-        bookedDateTimes = JSON.parse(resText).map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });;
-        setDisabledBasedOnCurrentTime(loadTime);
-        setDisabledBasedOnOtherBookings();
-    });
-    // console.log(loadTime);
+    getBookedTimeSlots();
+    console.log(loadTime);
 };
 
-dateInput.addEventListener('change', (e) => {
+dateInput.addEventListener('change', (ev) => {
     setTimeInputState(false, false);
     setDisabledBasedOnCurrentTime(new Date());
     setDisabledBasedOnOtherBookings();
+    setDisabledPreemptivelyPreventOverlaps();
 });
+
+let refreshID = setInterval(getBookedTimeSlots, 1000 * 60 * 10);
