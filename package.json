@@ -5,12 +5,18 @@
   "main": "app.js",
   "scripts": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
 =======
     "test": "echo \"Error: no test specified\" && exit 1"
 >>>>>>> c04134d... commit app to heroku
   },
+=======
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+},
+>>>>>>> a07bcf1... added start command
   "author": "",
   "license": "ISC",
   "dependencies": {
