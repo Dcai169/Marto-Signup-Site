@@ -64,11 +64,18 @@ function setDisabledBasedOnOtherBookings() {
 }
 
 function setDisabledPreemptivelyPreventOverlaps() {
+<<<<<<< HEAD
     console.log(calcServiceCost().hours);
     for (var i = 1; i < timeInput.options.length; i++) {
         let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
         let projectedEnd = new Date(dateInput.valueAsNumber + 1.44e+7 + (timeArray[0] + calcServiceCost().hours) * 3.6e+6 + timeArray[1] * 6.0e+4);
         console.log(timeInput.options[i].value);
+=======
+    for (var i = 1; i < timeInput.options.length; i++) {
+        let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
+        let projectedEnd = new Date(dateInput.valueAsNumber + 1.44e+7 + (timeArray[0] + calcServiceCost().hours) * 3.6e+6 + timeArray[1] * 6.0e+4);
+        // console.log(timeInput.options[i].value);
+>>>>>>> c04134d... commit app to heroku
         bookedDateTimes.forEach((app) => {
             if (app.appStart.toDateString() === projectedEnd.toDateString() && app.appStart < projectedEnd) {
                 timeInput.options[i].disabled = true;
@@ -189,7 +196,11 @@ window.onload = function () {
     $('#main-form-submit').attr("disabled", true);
     setTimeInputState(false, false);
     getBookedTimeSlots();
+<<<<<<< HEAD
     console.log(loadTime);
+=======
+    // console.log(loadTime);
+>>>>>>> c04134d... commit app to heroku
 };
 
 dateInput.addEventListener('change', (ev) => {
