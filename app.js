@@ -5,11 +5,7 @@ const expressip = require('express-ip');
 // const flash = require('connect-flash');
 const routes = require('./routes.js');
 const app = express();
-<<<<<<< HEAD
-const httpPort = 8770;
-=======
 const httpPort = process.env.PORT; //8770;
->>>>>>> c04134d... commit app to heroku
 const server = require("http").createServer(app);
 require('dotenv').config({ path: './config.env' });
 
