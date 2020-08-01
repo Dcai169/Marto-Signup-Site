@@ -77,7 +77,11 @@ function setDisabledPreemptivelyPreventOverlaps() {
 }
 
 function getBookedTimeSlots() {
+<<<<<<< HEAD
     httpGetAsync('http://martocarwash.ddns.net/booked', (resText) => {
+=======
+    httpGetAsync('https://martocarwash.herokuapp.com/booked', (resText) => {
+>>>>>>> 5a68b7a... updated booked url
         bookedDateTimes = JSON.parse(resText).map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });;
         setDisabledBasedOnCurrentTime(new Date());
         setDisabledBasedOnOtherBookings();
