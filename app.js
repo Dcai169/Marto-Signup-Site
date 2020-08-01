@@ -5,7 +5,7 @@ const expressip = require('express-ip');
 // const flash = require('connect-flash');
 const routes = require('./routes.js');
 const app = express();
-const httpPort = process.env.PORT; //8770;
+const httpPort = process.env.PORT; // 8770;
 const server = require("http").createServer(app);
 require('dotenv').config({ path: './config.env' });
 
@@ -19,3 +19,4 @@ server.listen(httpPort, () => {
 })
 
 // Move entries from one sheet to another to reduce clutter
+// Change to force commit
