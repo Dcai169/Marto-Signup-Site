@@ -161,6 +161,8 @@ router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidato
                 ClientName: req.body['client-name'],
                 ClientEmail: req.body['client-email'],
                 ClientPhone: req.body['app-phone'],
+                TimeBooked: new Date(),
+                ExpirationTime: '',
                 SpecialInstructions: (req.body['special-instructions'] ? req.body['special-instructions'] : 'No Instructions')
             });
         })();
