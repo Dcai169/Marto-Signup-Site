@@ -202,4 +202,5 @@ dateInput.addEventListener('change', (ev) => {
     setDisabledPreemptivelyPreventOverlaps();
 });
 
+let reloadPeriodic = setInterval(() => {location.reload()}, 1000 * 60 * 60);
 let refreshID = setInterval(getBookedTimeSlots, 1000 * 60 * 10);
