@@ -203,4 +203,4 @@ dateInput.addEventListener('change', (ev) => {
 });
 
 let reloadPeriodic = setInterval(() => {location.reload()}, 1000 * 60 * 60);
-let refreshID = setInterval(getBookedTimeSlots, 1000 * 60 * 10);
+let refreshID = setInterval(getBookedTimeSlots, 1000 * 60);
