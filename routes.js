@@ -53,7 +53,7 @@ router.get('/booked', (req, res) => {
 });
 
 router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidators, appointmentSanitizers, (req, res) => {
-    console.log(`POST ${JSON.stringify(req.body)}`);
+    console.log(`POST / ${JSON.stringify(req.body)}`);
     console.log('=================================');
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -172,8 +172,28 @@ router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidato
     }
 });
 
-router.post('/reserve', (req, res) => {
-
+router.post('/reserve', bodyParser.urlencoded({ extended: false }), (req, res) => {
+    console.log(`POST /reserve`);
+    console.log('=================================');
+    let sheet = doc.sheetsByIndex[0];
+        (async () => {
+            await sheet.addRow({
+                // VehicleType: req.body['vehicle-type'],
+                // VehicleModel: req.body['vehicle-model'],
+                // ExteriorService: req.body['exterior-service'].substring(9),
+                // InteriorService: req.body['interior-service'].substring(9),
+                AppDate: req.body['client-name'],
+                AppDuration: req.body['app-name'],
+                // AppPrice: `$${serviceCost.price}`,
+                // AppAddress: `${req.body['client-address']} ${req.body['client-city']}, ${req.body['app-state']}`,
+                ClientName: req.body['client-name'],
+                // ClientEmail: req.body['client-email'],
+                // ClientPhone: req.body['app-phone'],
+                TimeBooked: new Date().toLocaleString(),
+                ExpirationTime: req.body['expiration-time'],
+                SpecialInstructions: req.body['special-instructions']
+            });
+        })();
 });
 
 router.get('/dashboard', (req, res) => {

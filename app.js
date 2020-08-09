@@ -41,7 +41,7 @@ function movePastEntries(){
         primarySheetRows.forEach((row) => {
             if(minDate > new Date(row.AppDate)) {
                 archiveSheetRows.addRow(row._rawData);
-                await archiveSheetRows.saveUpdatedCells();
+                archiveSheetRows.saveUpdatedCells();
                 row.delete();
             } else if (minDate > new Date(row.ExpirationTime)) {
                 row.delete();

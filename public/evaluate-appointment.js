@@ -1,3 +1,4 @@
+//#region variable delarations 
 let vehicleType = document.getElementById('vehicle-type')
 let calculateButton = document.getElementById('calculate-button');
 
@@ -9,6 +10,33 @@ let timeInput = document.getElementById('app-time');
 let display = document.getElementById('datetime-display');
 
 let bookedDateTimes = undefined;
+//#endregion
+
+// Blatently copied from Stack Overflow
+function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
 
 function servicesAreValid(appDate) {
     return !(exteriorService.value === 'none' && interiorService.value === 'none');
@@ -25,7 +53,7 @@ function httpGETAsync(url, callback) {
     xmlHttp.send(null);
 }
 
-function httpPOSTAsync(url, obj, callback){
+function httpPOSTAsync(url, obj, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -103,6 +131,21 @@ function getBookedTimeSlots() {
     console.log("Bookings Updated");
 }
 
+// POST a reservation for an appointment and save Id in a cookie.
+function submitAppointmentReservation() {
+    let id = new Date().valueOf().toString(32);
+    let POSTData = {
+        'client-name': id,
+        'app-name': getSelectedTimeObj().toLocaleString(),
+        'app-duration': `${calcServiceCost().hours}hrs`,
+        'expiration-time': new Date(new Date().valueOf + 3.6e+6 * (4 + 0.5)).toLocaleString(),
+        'special-instructions': 'Reserved booking. This indicates that a user is considering this time slot.',
+    };
+
+    httpPOSTAsync('https://martocarwash.herokuapp.com/reserve', POSTData, (res) => { });
+}
+
+// Calculate duration and cost of services
 function calcServiceCost() {
     let serviceCost = { hours: 0, price: 0 };
     let appDate = getSelectedTimeObj();
@@ -216,4 +259,9 @@ dateInput.addEventListener('change', (ev) => {
     setDisabledPreemptivelyPreventOverlaps();
 });
 
+<<<<<<< HEAD
 let refreshID = setInterval(getBookedTimeSlots, 1000 * 60 * 10);
+=======
+let reloadPeriodic = setInterval(() => { location.reload() }, 1000 * 60 * 60);
+let refreshID = setInterval(getBookedTimeSlots, 1000 * 60);
+>>>>>>> 804905e... fixed bug in movePastEntries
