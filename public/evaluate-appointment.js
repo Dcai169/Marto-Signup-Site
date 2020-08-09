@@ -14,16 +14,29 @@ function servicesAreValid(appDate) {
     return !(exteriorService.value === 'none' && interiorService.value === 'none');
 }
 
-function httpGetAsync(theUrl, callback) {
+// Make a get request to a given url
+function httpGETAsync(url, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
             callback(xmlHttp.responseText);
     }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.open("GET", url, true); // true for asynchronous 
     xmlHttp.send(null);
 }
 
+function httpPOSTAsync(url, obj, callback){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    }
+    xmlHttp.open("POST", url, true);
+    xmlHttp.setRequestHeader('Content-Type', 'application/json');
+    xmlHttp.send(JSON.stringify(obj));
+}
+
+// Set every time option to a given state
 function setTimeInputState(disabledState, hiddenState) {
     for (var i = 1; i < timeInput.options.length; i++) {
         timeInput.options[i].disabled = disabledState;
@@ -77,13 +90,17 @@ function setDisabledPreemptivelyPreventOverlaps() {
 }
 
 function getBookedTimeSlots() {
-    httpGetAsync('https://martocarwash.herokuapp.com/booked', (resText) => {
-        bookedDateTimes = JSON.parse(resText).map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });;
+    httpGETAsync('https://martocarwash.herokuapp.com/booked', (resText) => {
+        newBookedDateTimes = JSON.parse(resText).map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });
+        if (JSON.stringify(newBookedDateTimes) !== JSON.stringify(bookedDateTimes)) {
+            console.log("New appointment detected");
+        }
+        bookedDateTimes = newBookedDateTimes;
         setDisabledBasedOnCurrentTime(new Date());
         setDisabledBasedOnOtherBookings();
         setDisabledPreemptivelyPreventOverlaps();
     });
-    // console.log("Slots Updated");
+    console.log("Bookings Updated");
 }
 
 function calcServiceCost() {

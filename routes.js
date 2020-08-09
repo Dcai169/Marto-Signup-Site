@@ -35,7 +35,7 @@ appointmentSanitizers = [
 ];
 
 router.get('/', (req, res) => {
-    console.log(`GET ${req.ipInfo['ip'].substring(7)}${(req.ipInfo.error ? "" : `${(req.ipInfo.city ? ' '+req.ipInfo.city : '')}${(req.ipInfo.region ? ' '+req.ipInfo.region+',' : '')} ${req.ipInfo.country} ${req.ipInfo.ll}`)}`);
+    console.log(`GET ${req.ipInfo['ip'].substring(7)}${(req.ipInfo.error ? "" : `${(req.ipInfo.city ? ' ' + req.ipInfo.city : '')}${(req.ipInfo.region ? ' ' + req.ipInfo.region + ',' : '')} ${req.ipInfo.country} ${req.ipInfo.ll}`)}`);
     console.log('=================================');
     res.render("signup-form");
 });
@@ -44,9 +44,9 @@ router.get('/booked', (req, res) => {
     console.log('GET /booked');
     // let appointmentList = undefined;
     (async () => {
-        let sheetRows = await doc.sheetsByIndex[0].getRows({offset: 0});
+        let sheetRows = await doc.sheetsByIndex[0].getRows({ offset: 0 });
         let appointmentList = sheetRows.map((row) => {
-            return {appStart: new Date(`${row.AppDate} -0400`), appEnd: new Date(new Date(`${row.AppDate} -0400`).valueOf() + Number(row.AppDuration.substring(0, row.AppDuration.length - 3)) * 3.6e+6)};
+            return { appStart: new Date(`${row.AppDate} -0400`), appEnd: new Date(new Date(`${row.AppDate} -0400`).valueOf() + Number(row.AppDuration.substring(0, row.AppDuration.length - 3)) * 3.6e+6) };
         });
         res.send(JSON.stringify(appointmentList));
     })();
@@ -150,7 +150,7 @@ router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidato
         let sheet = doc.sheetsByIndex[0];
         (async () => {
             await sheet.addRow({
-                VehicleType: req.body['vehicle-type'], 
+                VehicleType: req.body['vehicle-type'],
                 VehicleModel: req.body['vehicle-model'],
                 ExteriorService: req.body['exterior-service'].substring(9),
                 InteriorService: req.body['interior-service'].substring(9),
@@ -161,7 +161,7 @@ router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidato
                 ClientName: req.body['client-name'],
                 ClientEmail: req.body['client-email'],
                 ClientPhone: req.body['app-phone'],
-                TimeBooked: new Date(),
+                TimeBooked: new Date().toLocaleString(),
                 ExpirationTime: '',
                 SpecialInstructions: (req.body['special-instructions'] ? req.body['special-instructions'] : 'No Instructions')
             });
@@ -170,15 +170,14 @@ router.post('/', bodyParser.urlencoded({ extended: false }), appointmentValidato
         // console.log('============');
         return res.render('form-submit', { date: appDate.toLocaleString() });
     }
+});
+
+router.post('/reserve', (req, res) => {
 
 });
 
 router.get('/dashboard', (req, res) => {
     res.send('dashboard');
 });
-
-// router.get('/test', (req, res) => {
-//     res.render('test');
-// });
 
 module.exports = router;
