@@ -11,12 +11,17 @@ require('dotenv').config({ path: './config.env' });
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 
 let doc = null;
+let entryMover = undefined;
+
 (async () => {
     doc = new GoogleSpreadsheet('1RXtdcuZ9MKMl9q6ceS7-Txz8OwZFfQmie8i1KmwT7O0');
     await doc.useServiceAccountAuth(require('./service-acc.json'));
     await doc.loadInfo();
     console.log('GSpread Ready')
-})();
+})().then(() => {
+    entryMover = setInterval(movePastEntries, 1000 * 60 * 60 * 24);
+    movePastEntries();
+});
 
 app.set('view engine', 'pug');
 app.use(expressip().getIpInfoMiddleware);
@@ -25,23 +30,24 @@ app.use('/', routes);
 server.listen(httpPort, () => {
     console.log('Server running on port ' + httpPort);
     console.log('============');
-})
-
-// Move entries from one sheet to another to reduce clutter
-// Change to force commit
+});
 
 function movePastEntries(){
-    let appointmentList = [];
-    let minDate = new Date();
+    let minDate = new Date(new Date().valueOf() + 3.6e+6 * 4); // In UTC cause why not
 
     (async () => {
-        let sheetRows = await doc.sheetsByIndex[0].getRows({ offset: 0 });
-        appointmentList = sheetRows.map((row) => {
-            return { appStart: new Date(`${row.AppDate} -0400`), appEnd: new Date(new Date(`${row.AppDate} -0400`).valueOf() + Number(row.AppDuration.substring(0, row.AppDuration.length - 3)) * 3.6e+6) };
+        let primarySheetRows = await doc.sheetsByIndex[0].getRows({ offset: 0 });
+        let archiveSheetRows = await doc.sheetsByIndex[1];
+        primarySheetRows.forEach((row) => {
+            if(minDate > new Date(row.AppDate)) {
+                archiveSheetRows.addRow(row._rawData);
+                await archiveSheetRows.saveUpdatedCells();
+                row.delete();
+            } else if (minDate > new Date(row.ExpirationTime)) {
+                row.delete();
+            }
         });
     })();
 
-    appointmentList.forEach((app) => {
-
-    });
+    console.log('Old appointments removed');
 }
