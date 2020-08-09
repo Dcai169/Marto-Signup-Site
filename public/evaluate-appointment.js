@@ -188,7 +188,7 @@ dateInput.addEventListener('change', serviceEventHandler);
 exteriorService.addEventListener('change', serviceEventHandler);
 interiorService.addEventListener('change', serviceEventHandler);
 
-calculateButton.addEventListener('click', (ev) => {
+calculateButton.addEventListener('click', (e) => {
     e.preventDefault();
     let serviceCost = calcServiceCost();
 

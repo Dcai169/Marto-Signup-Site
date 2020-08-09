@@ -11,7 +11,7 @@ let doc = null;
     doc = new GoogleSpreadsheet('1RXtdcuZ9MKMl9q6ceS7-Txz8OwZFfQmie8i1KmwT7O0');
     await doc.useServiceAccountAuth(require('./service-acc.json'));
     await doc.loadInfo();
-    // console.log('GSpread Ready')
+    console.log('GSpread Ready')
 })();
 
 appointmentValidators = [
