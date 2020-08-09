@@ -192,6 +192,7 @@ calculateButton.addEventListener('click', (e) => {
     e.preventDefault();
     let serviceCost = calcServiceCost();
 
+    let appDate = getSelectedTimeObj()
     if (servicesAreValid(appDate)) {
         display.innerHTML = `Your appointment will be on ${appDate.toLocaleDateString()} from ${appDate.toLocaleTimeString()} to ${new Date(appDate.valueOf() + serviceCost.hours * 3.6e+6).toLocaleTimeString()}, and will cost $${serviceCost.price}.`
         $('#main-form-submit').removeAttr('disabled');
