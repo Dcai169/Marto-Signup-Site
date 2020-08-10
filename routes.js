@@ -41,7 +41,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/booked', (req, res) => {
-    console.log('GET /booked');
+    // console.log('GET /booked');
     // let appointmentList = undefined;
     (async () => {
         let sheetRows = await doc.sheetsByIndex[0].getRows({ offset: 0 });
