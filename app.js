@@ -10,6 +10,13 @@ const server = require("http").createServer(app);
 require('dotenv').config({ path: './config.env' });
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 
+// OBJECTIVES
+// Change when appoinments are moved to archive
+// Change where archived appointments are stored
+// Invert current appointment model i.e timeslot will be opened rather than all times being open
+// SECONDARY 
+// Recurrening timeslots
+
 let liveSheet = null;
 let entryMover = undefined;
 
