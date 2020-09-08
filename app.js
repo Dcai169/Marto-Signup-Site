@@ -10,13 +10,13 @@ const server = require("http").createServer(app);
 require('dotenv').config({ path: './config.env' });
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 
-let doc = null;
+let liveSheet = null;
 let entryMover = undefined;
 
 (async () => {
-    doc = new GoogleSpreadsheet('1RXtdcuZ9MKMl9q6ceS7-Txz8OwZFfQmie8i1KmwT7O0');
-    await doc.useServiceAccountAuth(require('./service-acc.json'));
-    await doc.loadInfo();
+    liveSheet = new GoogleSpreadsheet('1RXtdcuZ9MKMl9q6ceS7-Txz8OwZFfQmie8i1KmwT7O0');
+    await liveSheet.useServiceAccountAuth(require('./service-acc.json'));
+    await liveSheet.loadInfo();
     console.log('GSpread Ready')
 })().then(() => {
     entryMover = setInterval(movePastEntries, 1000 * 60 * 60 * 24);
@@ -36,8 +36,8 @@ function movePastEntries(){
     let minDate = new Date(new Date().valueOf() + 3.6e+6 * 4); // In UTC cause why not
 
     (async () => {
-        let primarySheetRows = await doc.sheetsByIndex[0].getRows({ offset: 0 });
-        let archiveSheetRows = await doc.sheetsByIndex[1];
+        let primarySheetRows = await liveSheet.sheetsByIndex[0].getRows({ offset: 0 });
+        let archiveSheetRows = await liveSheet.sheetsByIndex[1];
         primarySheetRows.forEach((row) => {
             if(minDate > new Date(row.AppDate)) {
                 archiveSheetRows.addRow(row._rawData);
