@@ -93,7 +93,7 @@ function setDisabledBasedOnCurrentTime(minTime) {
 }
 
 function setDisabledBasedOnOtherBookings() {
-    bookedDateTimes.forEach(app => {
+    bookedDateTimes[0].forEach(app => {
         for (var i = 1; i < timeInput.options.length; i++) {
             let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
             let itemDate = new Date(dateInput.valueAsNumber + 1.44e+7 + timeArray[0] * 3.6e+6 + timeArray[1] * 6.0e+4);
@@ -109,7 +109,7 @@ function setDisabledPreemptivelyPreventOverlaps() {
         let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
         let projectedEnd = new Date(dateInput.valueAsNumber + 1.44e+7 + (timeArray[0] + calcServiceCost().hours) * 3.6e+6 + timeArray[1] * 6.0e+4);
         // console.log(timeInput.options[i].value);
-        bookedDateTimes.forEach((app) => {
+        bookedDateTimes[0].forEach((app) => {
             if (app.appStart.toDateString() === projectedEnd.toDateString() && app.appStart < projectedEnd) {
                 timeInput.options[i].disabled = true;
             }
@@ -117,9 +117,27 @@ function setDisabledPreemptivelyPreventOverlaps() {
     }
 }
 
+function setDisabledBasedOnOpenings() {
+    for (var i = 1; i < timeInput.options.length; i++) {
+        let timeArray = timeInput.options[i].value.split(':').map((obj) => { return Number(obj) });
+        let itemDate = new Date(dateInput.valueAsNumber + 1.44e+7 + (timeArray[0] + 4) * 3.6e+6 + timeArray[1] * 6.0e+4);
+        bookedDateTimes[1].forEach((openTime) => {
+            if (new Date(openTime.openStart) <= itemDate && itemDate < new Date(openTime.openEnd)) {
+                timeInput.options[i].disabled = false;
+            } else {
+                timeInput.options[i].disabled = true;
+            }
+        });
+    }
+}
+
 function getBookedTimeSlots() {
-    httpGETAsync('https://martocarwash.herokuapp.com/booked', (resText) => {
-        newBookedDateTimes = JSON.parse(resText).map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });
+    // https://martocarwash.herokuapp.com/booked
+    httpGETAsync('http://localhost:8770/booked', (resText) => {
+        newBookedDateTimes = JSON.parse(resText)
+        newBookedDateTimes[0].map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });
+        newBookedDateTimes[1].map((open) => { return { openStart: new Date(open.openStart), openEnd: new Date(open.openEnd) } });
+        console.log(newBookedDateTimes)
         if (JSON.stringify(newBookedDateTimes) !== JSON.stringify(bookedDateTimes)) {
             console.log("New appointment detected");
         }
@@ -127,6 +145,7 @@ function getBookedTimeSlots() {
         setDisabledBasedOnCurrentTime(new Date());
         setDisabledBasedOnOtherBookings();
         setDisabledPreemptivelyPreventOverlaps();
+        setDisabledBasedOnOpenings();
     });
     console.log("Bookings Updated");
 }
@@ -257,11 +276,8 @@ dateInput.addEventListener('change', (ev) => {
     setDisabledBasedOnCurrentTime(new Date());
     setDisabledBasedOnOtherBookings();
     setDisabledPreemptivelyPreventOverlaps();
+    setDisabledBasedOnOpenings();
 });
 
-<<<<<<< HEAD
-let refreshID = setInterval(getBookedTimeSlots, 1000 * 60 * 10);
-=======
 let reloadPeriodic = setInterval(() => { location.reload() }, 1000 * 60 * 60);
 let refreshID = setInterval(getBookedTimeSlots, 1000 * 60);
->>>>>>> 804905e... fixed bug in movePastEntries

@@ -9,7 +9,7 @@ const { GoogleSpreadsheet } = require('google-spreadsheet');
 let doc = null;
 (async () => {
     doc = new GoogleSpreadsheet('1RXtdcuZ9MKMl9q6ceS7-Txz8OwZFfQmie8i1KmwT7O0');
-    await doc.useServiceAccountAuth(require('./service-acc.json'));
+    await doc.useServiceAccountAuth(require('./service_acc.json'));
     await doc.loadInfo();
     console.log('GSpread Ready')
 })();
@@ -42,12 +42,22 @@ router.get('/', (req, res) => {
 
 router.get('/booked', (req, res) => {
     // console.log('GET /booked');
-    // let appointmentList = undefined;
+    let appointmentList = [];
     (async () => {
-        let sheetRows = await doc.sheetsByIndex[0].getRows({ offset: 0 });
-        let appointmentList = sheetRows.map((row) => {
-            return { appStart: new Date(`${row.AppDate} -0400`), appEnd: new Date(new Date(`${row.AppDate} -0400`).valueOf() + Number(row.AppDuration.substring(0, row.AppDuration.length - 3)) * 3.6e+6) };
-        });
+        let appRows = await doc.sheetsByIndex[0].getRows({ offset: 0 });
+        let openRows = await doc.sheetsByIndex[1].getRows({ offset: 0 });
+        appointmentList.push(appRows.map((row) => {
+            return {
+                appStart: new Date(`${row.AppDate} -0400`),
+                appEnd: new Date(new Date(`${row.AppDate} -0400`).valueOf() + Number(row.AppDuration.substring(0, row.AppDuration.length - 3)) * 3.6e+6)
+            }
+        }));
+        appointmentList.push(openRows.map((row) => {
+            return {
+                openStart: new Date(...row.StartDate.split('-').concat(row.StartTime.split(':')).map((v, i) => { if (i === 1) { return v = Number(v) - 1 } else if (i === 3) { return v = Number(v) + 4 } else { return Number(v) }})),
+                openEnd: new Date(...row.EndDate.split('-').concat(row.EndTime.split(':')).map((v, i) => { if (i === 1) { return v = Number(v) - 1 } else if (i === 3) { return v = Number(v) + 4 } else { return Number(v) }}))
+            }
+        }));
         res.send(JSON.stringify(appointmentList));
     })();
 });
@@ -176,24 +186,24 @@ router.post('/reserve', bodyParser.urlencoded({ extended: false }), (req, res) =
     console.log(`POST /reserve`);
     console.log('=================================');
     let sheet = doc.sheetsByIndex[0];
-        (async () => {
-            await sheet.addRow({
-                // VehicleType: req.body['vehicle-type'],
-                // VehicleModel: req.body['vehicle-model'],
-                // ExteriorService: req.body['exterior-service'].substring(9),
-                // InteriorService: req.body['interior-service'].substring(9),
-                AppDate: req.body['client-name'],
-                AppDuration: req.body['app-name'],
-                // AppPrice: `$${serviceCost.price}`,
-                // AppAddress: `${req.body['client-address']} ${req.body['client-city']}, ${req.body['app-state']}`,
-                ClientName: req.body['client-name'],
-                // ClientEmail: req.body['client-email'],
-                // ClientPhone: req.body['app-phone'],
-                TimeBooked: new Date().toLocaleString(),
-                ExpirationTime: req.body['expiration-time'],
-                SpecialInstructions: req.body['special-instructions']
-            });
-        })();
+    (async () => {
+        await sheet.addRow({
+            // VehicleType: req.body['vehicle-type'],
+            // VehicleModel: req.body['vehicle-model'],
+            // ExteriorService: req.body['exterior-service'].substring(9),
+            // InteriorService: req.body['interior-service'].substring(9),
+            AppDate: req.body['client-name'],
+            AppDuration: req.body['app-name'],
+            // AppPrice: `$${serviceCost.price}`,
+            // AppAddress: `${req.body['client-address']} ${req.body['client-city']}, ${req.body['app-state']}`,
+            ClientName: req.body['client-name'],
+            // ClientEmail: req.body['client-email'],
+            // ClientPhone: req.body['app-phone'],
+            TimeBooked: new Date().toLocaleString(),
+            ExpirationTime: req.body['expiration-time'],
+            SpecialInstructions: req.body['special-instructions']
+        });
+    })();
 });
 
 router.get('/dashboard', (req, res) => {
