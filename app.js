@@ -11,11 +11,6 @@ require('dotenv').config({ path: './config.env' });
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const serviceAccountCredentials = JSON.parse(fs.readFileSync('./service_acc.json', 'utf-8'));
 
-// OBJECTIVES
-
-// SECONDARY 
-// Recurrening timeslots
-
 let activeSheet = null;
 let archiveSheet = null;
 let entryMover = undefined;

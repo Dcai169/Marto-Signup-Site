@@ -134,14 +134,19 @@ function setDisabledBasedOnOpenings() {
 function getBookedTimeSlots() {
     // https://martocarwash.herokuapp.com/booked
     httpGETAsync('http://localhost:8770/booked', (resText) => {
+        let appointments;
+        let openings;
         newBookedDateTimes = JSON.parse(resText)
-        newBookedDateTimes[0].map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });
-        newBookedDateTimes[1].map((open) => { return { openStart: new Date(open.openStart), openEnd: new Date(open.openEnd) } });
-        console.log(newBookedDateTimes)
+        appointments = newBookedDateTimes[0].map((app) => { return { appStart: new Date(app.appStart), appEnd: new Date(app.appEnd) } });
+        openings = newBookedDateTimes[1].map((open) => { return { openStart: new Date(open.openStart), openEnd: new Date(open.openEnd) }});
+        // newBookedDateTimes[1].map((open) => { return { openStart: new Date(open.openStart), openEnd: new Date(open.openEnd) } });
         if (JSON.stringify(newBookedDateTimes) !== JSON.stringify(bookedDateTimes)) {
             console.log("New appointment detected");
         }
-        bookedDateTimes = newBookedDateTimes;
+        bookedDateTimes = [appointments, openings];
+        // console.log(appointments);
+        // console.log(openings);
+        // console.log(bookedDateTimes);
         setDisabledBasedOnCurrentTime(new Date());
         setDisabledBasedOnOtherBookings();
         setDisabledPreemptivelyPreventOverlaps();
