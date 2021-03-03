@@ -20,6 +20,6 @@
     "express-ip": "^1.0.4",
     "express-validator": "^6.6.0",
     "google-spreadsheet": "^3.0.11",
-    "pug": "^3.0.0"
+    "pug": "^3.0.1"
   }
 }
